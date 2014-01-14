@@ -17,6 +17,8 @@ a single data constructor, also called "App".
 -}
 data App = App
 
+mkMessage "App" "messages" "en"
+
 {-
 
 The Yesod typeclass allows us to alter a number of the behaviors of Yesod, such
@@ -26,6 +28,9 @@ is pretty boring.
 
 -}
 instance Yesod App
+
+instance RenderMessage App FormMessage where
+    renderMessage _ _ = defaultFormMessage
 
 {-
 
@@ -39,18 +44,12 @@ parseRoutes parses Yesod's routing Domain Specific Language (DSL), and mkYesodDa
 the route datatype and the parse/render functions. We'll see the generation of the dispatch
 function when we get to the Main module.
 
-Our application has three routes. HomeR is served from /, and responds to GET requests.
-MarkdownR is served from /markdown, and answers PUT requests. FibR has a dynamic component,
-and responds to any GET request made to /fib/<some integer>. Yesod automatically handles
-the parsing of these routes into Haskell datatypes, so your application doesn't need to
-worry about input validation or marshaling.
-
-Each route has a corresponding handler module, e.g. Handler.Home.
-Please see those modules for more details.
 
 -}
+
 mkYesodData "App" [parseRoutes|
-/         HomeR     GET
-/markdown MarkdownR PUT
-/fib/#Int FibR      GET
+/                       HomeR       GET
+/markdown               MarkdownR   PUT
+/fib/#Int               FibR        GET
+/bmi/#String/#String    BmiR        GET
 |]

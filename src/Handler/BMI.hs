@@ -1,13 +1,16 @@
-module Handler.Fib where
+module Handler.BMI where
 
 import Import
 
 -- A standard Haskell technique for creating an infinite list of fibonacci values.
-fibs :: [Integer]
-fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
+bmi :: Double -> Double -> Double
+bmi m g = m / (g*g)
 
 -- Unlike Handler.Home, our getFibR returns a Value result, which is the datatype
 -- used for JSON values. We return our result as a JSON object, and place
 -- our integral result under the "value" key.
-getFibR :: Int -> Handler Value
-getFibR i = return $ object ["value" .= show (fibs !! abs (min 250 i)) ]
+getBmiR :: String -> String -> Handler Value
+getBmiR m g = return $ object ["value" .= bmi (td m) (td g)]
+    where
+        td :: String -> Double
+        td = read

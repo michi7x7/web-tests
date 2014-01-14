@@ -2,6 +2,8 @@ module Handler.Home where
 
 import Import
 
+
+
 {-
 
 Yesod follows a naming convention for handler function names: the lower-cased
@@ -19,11 +21,11 @@ getHomeR :: Handler Html
 -- layout, which includes a basic HTML 5 page outline.
 getHomeR = defaultLayout $ do
     -- Set the HTML <title> tag.
-    setTitle "Yesod Web Service Homepage"
+    setTitle "Michi's Playground!"
 
     -- Include some CDN-hosted Javascript and CSS to make our page a little nicer.
     addScriptRemote "//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"
-    addStylesheetRemote "//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"
+    -- addStylesheetRemote "//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"
 
     -- Hamlet is the standard HTML templating language used by Yesod.
     -- In this case, we include some specific markup to take advantage of
@@ -33,27 +35,26 @@ getHomeR = defaultLayout $ do
     [whamlet|
         <div .container-fluid>
           <div .row-fluid>
-            <h1>Welcome to the web service
+            <h1>Michi's Playground
         
           <div .row-fluid>
             <div .span6>
-                <h2>Fibs
+                <h2>_{MsgTitle}
                 <p>
-                    Fib number
-                    <input #fibinput type=number value=4>
-                    is
-                    <span #fiboutput>
-                    
-            <div .span6>
-            
-                <h2>Markdown
-                <textarea #markdowninput>
-                    ## Welcome
-                    
-                    Welcome to the Markdown demo. __Markup__ should work *correctly*.
-                <div .control-group>
-                    <button #updatemarkdown .btn .btn-primary>Update markdown output
-                <div #markdownoutput>
+                    _{MsgMass}
+                    <input #massinput type=number value=70>
+                    _{MsgSize}
+                    <input #sizeinput type=double value=1.75>
+                    <br>
+                    _{MsgResult}
+                    <input #bmioutput disabled>
+                <h2>Inkrementator
+                <p>
+                    <input #timer value="00.0" disabled>
+                    <button #restart>Neu Starten!
+                    <br>
+                    <input #incrementor type=number value=0 disabled>
+                    <button #inc>Erhöhen!
     |]
 
     -- Similar to Hamlet, Yesod has Lucius for CSS, and Julius for Javascript.
@@ -61,42 +62,59 @@ getHomeR = defaultLayout $ do
         body {
             margin: 0 auto;
         }
-        
-        #markdowninput {
-            width: 100%;
-            height: 300px;
-        }
-        
-        #markdownoutput {
-            border: 1px dashed #090;
-            padding: 0.5em;
-            background: #cfc;
-        }
     |]
     toWidget [julius|
-        function updateFib() {
-            $.getJSON("/fib/" + $("#fibinput").val(), function (o) {
-                $("#fiboutput").text(o.value);
+        function updateBMI() {
+            $.getJSON("/bmi/" + $("#massinput").val() + "/" + $("#sizeinput").val(), function (o) {
+                $("#bmioutput").val(o.value.toFixed(2));
             });
         }
-        
-        function updateMarkdown() {
-            // Note the use of the MarkdownR Haskell data type here.
-            // This is an example of a type-safe URL.
-            $.ajax("@{MarkdownR}", {
-                data: {"markdown": $("#markdowninput").val()},
-                success: function (o) {
-                     $("#markdownoutput").html(o.html);
-                },
-                type: "PUT"
-            });
+
+        var timer_running = false;
+        var starttime = 0;
+        var duration = 60e3;
+
+        function updateTimer() {
+            var now = $.now();
+
+            if(starttime == 0 && timer_running){
+                starttime = now;
+                $("#incrementor").val(0);
+            }
+
+            var rem = starttime + duration - now;
+
+            if(rem <= 0 && timer_running) {
+                timer_running = false;
+                $("#inc").attr("disabled", "disabled");
+            }
+
+            if (timer_running)
+                $("#timer").val(Math.floor(rem/100) / 10);
+            else
+                $("#timer").val("00.0");
         }
         
         $(function(){
-            updateFib();
-            $("#fibinput").change(updateFib);
+            updateBMI();
+            $("#massinput").change(updateBMI);
+            $("#sizeinput").change(updateBMI);
+
+            window.setInterval(updateTimer, 100);
             
-            updateMarkdown();
-            $("#updatemarkdown").click(updateMarkdown);
+            $("#inc").click(function() {
+                var value = $("#incrementor").val();
+                ++value;
+                $("#incrementor").val(value);
+
+                timer_running = true;
+            });
+
+            $("#restart").click(function(){
+                starttime = 0;
+                timer_running = false;
+                $("#inc").removeAttr("disabled");
+            })
+            
         });
     |]

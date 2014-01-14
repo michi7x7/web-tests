@@ -1,6 +1,9 @@
+module Main where
+
 import           Handler.Fib
 import           Handler.Home
 import           Handler.Markdown
+import           Handler.BMI
 import           Import
 
 {-
@@ -21,14 +24,3 @@ mkYesodDispatch "App" resourcesApp
 
 main :: IO ()
 main = warpEnv App
-
-{-
-
-Note that warpEnv handles a few important details for us:
-
-* Determines which port to listen on based on environment variables.
-* Sets up a number of WAI middlewares, such as request logging.
-* Converts our Yesod application into a WAI application.
-* Runs the whole thing.
-
--}
