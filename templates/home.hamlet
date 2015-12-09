@@ -1,0 +1,39 @@
+<div .container>
+    <h1>Michi's Playground
+
+    <div .row>
+        <h2>Countdown!
+        <p #countdown>
+        <p .countdownhint> _{MsgTimeLeft} #{target}
+    <div .row>
+        <h2>_{MsgTitle}
+        <p>
+            _{MsgMass}
+            <input #massinput type=number value=70>
+            _{MsgSize}
+            <input #sizeinput type=double value=1.75>
+            <br>
+            _{MsgResult}
+            <input #bmioutput disabled>
+        <h2>Inkrementator
+    <div .row>
+        <p>
+            <input #timer value="00.0" disabled>
+            <button #restart>Neu Starten!
+            <br>
+            <input #incrementor type=number value=0 disabled>
+            <button #inc>Erhöhen!
+    <div .row>
+        <h2>Temperatur-Rechner
+        <p>
+            <select #from>
+                <option value="0">Kelvin
+                <option value="1" selected>Celsius
+                <option value="2">Farenheit
+            <input #tempin  value="20.3">
+            -->
+            <select #to>
+                <option value="0">Kelvin
+                <option value="1">Celsius
+                <option value="2" selected>Farenheit
+            <input #tempout disabled>

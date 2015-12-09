@@ -52,4 +52,5 @@ mkYesodData "App" [parseRoutes|
 /markdown               MarkdownR   PUT
 /fib/#Int               FibR        GET
 /bmi/#String/#String    BmiR        GET
+/temp/#Int/#Int/#String TempR       GET
 |]

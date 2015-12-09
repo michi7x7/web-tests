@@ -1,0 +1,25 @@
+body {
+    background-color: #777;
+    font-family: Verdana, sans-serif;
+}
+
+.container {
+    width: 600px;
+    margin: 40px auto;
+    padding: 5px;
+    border: 1px solid #777;
+    background-color: #CCC;
+}
+
+#countdown {
+    text-align: center;
+    font-size: 36px;
+}
+
+.countdownhint {
+    text-align: center;
+}
+
+h1 {
+    border-bottom: 1px solid #A22;
+}

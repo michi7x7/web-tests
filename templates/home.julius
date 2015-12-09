@@ -1,0 +1,100 @@
+function updateBMI() {
+    $.getJSON("/bmi/" + $("#massinput").val() + "/" + $("#sizeinput").val(), function (o) {
+        $("#bmioutput").val(o.value.toFixed(2));
+    });
+}
+
+var timer_running = false;
+var starttime = 0;
+var duration = 60e3;
+
+function updateTimer() {
+    var now = $.now();
+
+    if(starttime == 0 && timer_running){
+        starttime = now;
+        $("#incrementor").val(0);
+    }
+
+    var rem = starttime + duration - now;
+
+    if(rem <= 0 && timer_running) {
+        timer_running = false;
+        $("#inc").attr("disabled", "disabled");
+    }
+
+    if (timer_running)
+        $("#timer").val(Math.floor(rem/100) / 10);
+    else
+        $("#timer").val("00.0");
+}
+
+function updateTemp() {
+    var temp = $("#tempin").val();
+    var from = $("#from").val();
+    var to   = $("#to").val();
+    $.getJSON("/temp/" + from + "/" + to + "/" + temp, function (o) {
+        $("#tempout").val(o.value.toFixed(2));
+    });
+}
+
+String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) {
+        return typeof args[number] != 'undefined' ? args[number] : match;
+    });
+};
+
+function updateCountdown() {
+    var to   = new Date(2015, 2, 8, 21, 45, 00);
+    var left = (to - (new Date())) / 1000;
+
+    var ds = 24*60*60, hs = 60*60, ms = 60;
+    
+    var days	 = Math.floor( left / ds);
+        left     = left - ds * days;
+    var hours	 = Math.floor( left / hs);
+        left     = left - hs * hours;
+    var minutes	 = Math.floor( left / ms);
+        left     = left - ms * minutes;
+    var seconds  = Math.floor( left);
+        left     = left - seconds;
+    var millisec = left * 1000;
+
+    var p = function(v) {
+        if(v < 10)
+            return "0" + v;
+        else
+            return "" + v;
+    }
+    
+    $("#countdown").text("{4} {0}:{1}:{2}.{3}".format(p(hours), p(minutes), p(seconds), millisec.toFixed(0), days));
+}
+
+$(function(){
+    updateBMI();
+    $("#massinput").change(updateBMI);
+    $("#sizeinput").change(updateBMI);
+
+    window.setInterval(updateTimer, 100);
+    window.setInterval(updateCountdown, 100);
+    
+    $("#inc").click(function() {
+        var value = $("#incrementor").val();
+        ++value;
+        $("#incrementor").val(value);
+
+        timer_running = true;
+    });
+
+    $("#restart").click(function(){
+        starttime = 0;
+        timer_running = false;
+        $("#inc").removeAttr("disabled");
+    })
+
+    $("#tempin").change(updateTemp);
+    $("#from").change(updateTemp);
+    $("#to").change(updateTemp);
+    updateTemp();
+});
